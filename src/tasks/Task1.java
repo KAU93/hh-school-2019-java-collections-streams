@@ -20,7 +20,14 @@ public class Task1 implements Task {
   // !!! Редактируйте этот метод !!!
   private List<Person> findOrderedPersons(List<Integer> personIds) {
     Set<Person> persons = PersonService.findPersons(personIds);
-    return Collections.emptyList();
+    return personIds.stream()
+            .map((id) -> {
+                       return persons.stream()
+                              .filter(p -> p.getId() == id)  // Фильтруем по id
+                              .findFirst().get();
+                    })
+            .collect(Collectors.toList());
+    // Асимптотика алгоритма  O(n*n)
   }
 
   @Override

@@ -4,11 +4,9 @@ import common.Person;
 import common.Task;
 
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /*
 Задача 2
@@ -22,7 +20,10 @@ public class Task2 implements Task {
   private static List<Person> combineAndSortWithLimit(Collection<Person> persons1,
                                                       Collection<Person> persons2,
                                                       int limit) {
-    return new ArrayList<>();
+    return Stream.concat(persons1.stream(), persons2.stream()) // создаем потоки persons1, persons2 и объединяем в общий поток
+            .sorted(Comparator.comparing(Person::getCreatedAt)) // Сортируем общий поток по дате создания
+            .limit(limit) // Ограничиваем вывод
+            .collect(Collectors.toList()); // Собираем в List
   }
 
   @Override
@@ -36,7 +37,7 @@ public class Task2 implements Task {
         new Person(3, "Person 3", time.minusSeconds(1)),
         new Person(4, "Person 4", time.plusSeconds(2))
     );
-    return combineAndSortWithLimit(persons1, persons2, 3).stream()
+   return combineAndSortWithLimit(persons1, persons2, 3).stream()
         .map(Person::getId)
         .collect(Collectors.toList())
         .equals(List.of(3, 1, 2));
