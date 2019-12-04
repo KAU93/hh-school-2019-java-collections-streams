@@ -4,9 +4,8 @@ import common.Person;
 import common.PersonService;
 import common.Task;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 /*
@@ -20,14 +19,10 @@ public class Task1 implements Task {
   // !!! Редактируйте этот метод !!!
   private List<Person> findOrderedPersons(List<Integer> personIds) {
     Set<Person> persons = PersonService.findPersons(personIds);
-    return personIds.stream()
-            .map((id) -> {
-                       return persons.stream()
-                              .filter(p -> p.getId() == id)  // Фильтруем по id
-                              .findFirst().get();
-                    })
-            .collect(Collectors.toList());
-    // Асимптотика алгоритма  O(n*n)
+
+    //Исправлено.  Теперь асимптотика алгоритма  O(n)
+   Map<Integer, Person> mapPerson = persons.stream().collect(Collectors.toMap(Person::getId, person -> person));
+   return personIds.stream().map(id -> mapPerson.get(id)).collect(Collectors.toList());
   }
 
   @Override

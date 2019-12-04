@@ -3,12 +3,7 @@ package tasks;
 import common.Person;
 import common.Task;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -29,19 +24,20 @@ public class Task8 implements Task {
   //Не хотим выдывать апи нашу фальшивую персону, поэтому конвертим начиная со второй
   public List<String> getNames(List<Person> persons) {
     // В случае пустого стрима, Collectors.toList() вернет пустой список
+    // По сравнению с начальным кодом, этот выглядит более понятным и лаконичным
     return persons.stream().skip(1).map(Person::getFirstName).collect(Collectors.toList());
   }
 
   //ну и различные имена тоже хочется
   public Set<String> getDifferentNames(List<Person> persons) {
-    return getNames(persons).stream().collect(Collectors.toSet()); // Т.к. собираем в  Set, то distinct тут лишний
+
+    return new HashSet<>(getNames(persons)); // Осознал, исправил
   }
 
   //Для фронтов выдадим полное имя, а то сами не могут
   public String convertPersonToString(Person person) {
-    // Так красивие, но возможно глупо))))
     return Stream.of(person.getSecondName(), person.getFirstName(), person.getFirstName())
-            .filter(el->el!=null)
+            .filter(Objects::nonNull)
             .collect(Collectors.joining(" "));
   }
 
@@ -51,19 +47,28 @@ public class Task8 implements Task {
     // При возникновении коллизий выберем первый добавленный элемент
     return persons.stream().collect(Collectors.toMap(Person::getId,
                                                       this::convertPersonToString,
-                                                      (s1,s2)->s1));
+                                                      (s1,s2) -> s1));
 
   }
 
   // есть ли совпадающие в двух коллекциях персоны?
   public boolean hasSamePersons(Collection<Person> persons1, Collection<Person> persons2) {
-    return persons1.stream().anyMatch(persons2::equals); // anyMatch вернет true если в person2 найдется элемент person1
+//   return persons1.stream().anyMatch(persons2::contains); // Вместо equals надо использовать contains
+    // Или пойти другим путем. Так будет быстрее. Порядка O(n) но плохо по памяти
+    Set<Person> all_persons = Stream.concat(persons1.stream(), persons2.stream()).collect(Collectors.toSet());
+    if (all_persons.size() == persons1.size() + persons2.size()) {
+      return true;
+    }
+    return false;
   }
 
-  //Выглядит вроде неплохо...
+// В изначальном коде изменялась переменная count класса Task8.
+// При дальнейшем развитии класса, она может быть использована в других методах,
+// и ее изменение здесь приведет к ошибке, которую очень сложно отловить
   public long countEven(Stream<Integer> numbers) {
     return numbers.filter(num -> num % 2 == 0).count(); // Метод count вернет кол-во элементов в стриме после фильтра
   }
+
 
   @Override
   public boolean check() {

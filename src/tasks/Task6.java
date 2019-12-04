@@ -22,31 +22,18 @@ public class Task6 implements Task {
                                             Map<Integer, Set<Integer>> personAreaIds,
                                             Collection<Area> areas) {
 
-      return personAreaIds.entrySet().stream()
-              .map( el -> {
-                  String name = persons.stream()    // Получаем имя персоны по id
-                          .filter( f-> f.getId() == el.getKey())
-                          .map(namePerson->namePerson.getFirstName())
-                          .findAny().get();
-                  Set<String> areasName = el.getValue().stream()  // Получаем множество названий регионов для конкретной персоны
-                          .map(id -> {
-                              return areas.stream()
-                                      .filter( ar->ar.getId() == id)
-                                      .map( m->m.getName())
-                                      .findAny().get();
-                          })
-                          .collect(Collectors.toSet());
-                  return areasName.stream().map(areaName->{     // Формируем выходную строку Имя - Регион и формируем в Set
-                      return name + " - " + areaName;
-                  })
-                          .collect(Collectors.toSet());
-              })
-              .reduce((s1,s2) ->{       // Объединяем получившиеся множества
-                  Set<String> rez = s1;
-                  rez.addAll(s2);
-                  return rez;
-              }).orElse(new HashSet<String>());
+      Map<Integer, String> namePersons = persons.stream().collect(Collectors.toMap(Person::getId, Person::getFirstName));
+      Map<Integer, String> nameAreas = areas.stream().collect(Collectors.toMap(Area::getId, Area::getName));
+      return persons.stream().flatMap(person -> {
+          Set<String> personAreaName = personAreaIds.get(person.getId()).stream()
+                  .map(area_id -> nameAreas.get(area_id))
+                  .collect(Collectors.toSet());
+          return personAreaName.stream()
+                  .map(areaName -> namePersons.get(person.getId()) + " - " + areaName)
+                  .collect(Collectors.toSet()).stream();
+      }).collect(Collectors.toSet());
   }
+
 
   @Override
   public boolean check() {

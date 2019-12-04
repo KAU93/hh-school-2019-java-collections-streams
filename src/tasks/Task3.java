@@ -21,8 +21,8 @@ public class Task3 implements Task {
 
     return persons.stream()
             .sorted(Comparator.comparing(Person::getSecondName)  // Сортируем поток по Фамилии
-                    .thenComparing(Person::getFirstName)          // Уже отсортированный поток сортируем по Имени
-                    .thenComparing(Person::getCreatedAt))         // Отсортированный по Фамилии и Имени поток сортируем по дате создания
+                    .thenComparing(Person::getFirstName)          // В случае совпадения фамилий сортируем по имени
+                    .thenComparing(Person::getCreatedAt))         // В случае совпадения имени сортируем по дате создания
             .collect(Collectors.toList());
   }
 

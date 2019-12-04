@@ -21,7 +21,7 @@ public class Task4 implements Task {
   // !!! Редактируйте этот метод !!!
   private List<ApiPersonDto> convert(List<Person> persons) {
     return persons.stream()
-            .map( person->convert(person) )  // К каждому элементу потока persons применяем метод convert
+            .map(Task4::convert)  // К каждому элементу потока persons применяем метод convert
             .collect(Collectors.toList());
   }
 
