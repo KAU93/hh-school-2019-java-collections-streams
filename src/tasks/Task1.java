@@ -21,8 +21,8 @@ public class Task1 implements Task {
     Set<Person> persons = PersonService.findPersons(personIds);
 
     //Исправлено.  Теперь асимптотика алгоритма  O(n)
-   Map<Integer, Person> mapPerson = persons.stream().collect(Collectors.toMap(Person::getId, person -> person));
-   return personIds.stream().map(id -> mapPerson.get(id)).collect(Collectors.toList());
+   Map<Integer, Person> personMap = persons.stream().collect(Collectors.toMap(Person::getId, person -> person));
+   return personIds.stream().map(personMap::get).collect(Collectors.toList());
   }
 
   @Override

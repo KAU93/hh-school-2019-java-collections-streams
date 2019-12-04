@@ -22,16 +22,14 @@ public class Task6 implements Task {
                                             Map<Integer, Set<Integer>> personAreaIds,
                                             Collection<Area> areas) {
 
-      Map<Integer, String> namePersons = persons.stream().collect(Collectors.toMap(Person::getId, Person::getFirstName));
-      Map<Integer, String> nameAreas = areas.stream().collect(Collectors.toMap(Area::getId, Area::getName));
-      return persons.stream().flatMap(person -> {
-          Set<String> personAreaName = personAreaIds.get(person.getId()).stream()
-                  .map(area_id -> nameAreas.get(area_id))
-                  .collect(Collectors.toSet());
-          return personAreaName.stream()
-                  .map(areaName -> namePersons.get(person.getId()) + " - " + areaName)
-                  .collect(Collectors.toSet()).stream();
-      }).collect(Collectors.toSet());
+      Map<Integer, String> personNames = persons.stream().collect(Collectors.toMap(Person::getId, Person::getFirstName));
+      Map<Integer, String> areaNames = areas.stream().collect(Collectors.toMap(Area::getId, Area::getName));
+      // Если у персоны не будет ареек, то flatMap вернет пустой стрим и выполнение для этой персоны закончится.
+      // Дальше стрим не пойдет
+      return persons.stream().flatMap(person -> personAreaIds.get(person.getId()).stream()
+              .map(areaId -> person.getFirstName() + " - " + areaNames.get(areaId))
+              .collect(Collectors.toSet()).stream())
+      .collect(Collectors.toSet());
   }
 
 
@@ -43,7 +41,7 @@ public class Task6 implements Task {
     );
     Map<Integer, Set<Integer>> personAreaIds = Map.of(1, Set.of(1, 2), 2, Set.of(2, 3));
     List<Area> areas = List.of(new Area(1, "Moscow"), new Area(2, "Spb"), new Area(3, "Ivanovo"));
-    return getPersonDescriptions(persons, personAreaIds, areas)
+      return getPersonDescriptions(persons, personAreaIds, areas)
         .equals(Set.of("Oleg - Moscow", "Oleg - Spb", "Vasya - Spb", "Vasya - Ivanovo"));
   }
 }

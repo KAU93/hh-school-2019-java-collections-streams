@@ -53,13 +53,8 @@ public class Task8 implements Task {
 
   // есть ли совпадающие в двух коллекциях персоны?
   public boolean hasSamePersons(Collection<Person> persons1, Collection<Person> persons2) {
-//   return persons1.stream().anyMatch(persons2::contains); // Вместо equals надо использовать contains
-    // Или пойти другим путем. Так будет быстрее. Порядка O(n) но плохо по памяти
-    Set<Person> all_persons = Stream.concat(persons1.stream(), persons2.stream()).collect(Collectors.toSet());
-    if (all_persons.size() == persons1.size() + persons2.size()) {
-      return true;
-    }
-    return false;
+  Set<Person> setPerson2 = new HashSet<Person>(persons2);  // Улучшим метод contains до O(1)!!!
+  return persons1.stream().anyMatch(setPerson2::contains); // Вместо equals надо использовать contains
   }
 
 // В изначальном коде изменялась переменная count класса Task8.
